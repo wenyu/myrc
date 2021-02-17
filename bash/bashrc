@@ -54,13 +54,15 @@ if [[ $_SYSTEM == 'Darwin' ]]; then
         _BASH_COMPLETION_DIR='/opt/homebrew/etc/bash_completion.d'
         case "$(arch)" in
             i386|x86_64*)
+                _BREW="/opt/homebrew_rosetta/bin/brew"
                 _ARCH_PS1="Rosetta2"
                 ;;
             arm64*)
-                eval $(/opt/homebrew/bin/brew shellenv)
-                _ARCH_PS1="NativeM1"
+                _BREW="/opt/homebrew/bin/brew"
+                _ARCH_PS1="NativeAS"
                 ;;
         esac 
+        [ -f "$_BREW" ] && eval $("$_BREW" shellenv)
     else
         _BASH_COMPLETION_DIR='/usr/local/etc/bash_completion.d'
     fi
