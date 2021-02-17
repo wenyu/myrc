@@ -57,7 +57,8 @@ if [[ $_SYSTEM == 'Darwin' ]]; then
                 _ARCH_PS1="Rosetta2"
                 ;;
             arm64*)
-                _ARCH_PS1="Native"
+                eval $(/opt/homebrew/bin/brew shellenv)
+                _ARCH_PS1="NativeM1"
                 ;;
         esac 
     else
