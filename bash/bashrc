@@ -1,0 +1,111 @@
+## Setup and Environment check
+stty -ixon
+_SYSTEM="$(uname -s)"
+
+alias em='emacs -nw'
+alias path='export PATH="`pwd`:$PATH"'
+alias here='find . | grep'
+
+export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+export EDITOR="emacs -nw"
+
+function cleanall {
+    find . -type f -regex '.*[#~]$' -or -regex '.*/\.[^/]*\.swp$' | while read FN; do
+        rm -f "$FN" && echo "Deleted: $FN"
+    done
+}
+
+function tbgs {
+    if [ $# -eq 0 ]; then
+        echo "Usage: tbgs <str to find>";
+        return 1;
+    fi;
+    grep --color=auto --exclude='*[~#]' -nire "$@" . 2> /dev/null;
+    return $?
+}
+
+function force_kill {
+    if [ $# -ne 1 ]; then
+        echo "You need to provide a target."
+        return 1
+    fi
+    ps ax | grep -i "$1" | grep -v grep | while read A B; do echo $A; done | sudo xargs kill -9
+}
+
+# PS_Face
+PS1_FACE='\[\e[1;33m\]$(CODE=$?; if [ $CODE -eq 0 ]; then echo -e "\[\e[1;44m\]:-)"; elif [ $CODE -eq 148 ]; then echo -e "\[\e[1;44m\].zZ"; else echo -e "\[\e[1;41m\]:-("; fi)'
+RED='\[\e[1;31m\]'
+WHITE='\[\e[1;37m\]'
+YELLOW='\[\e[1;33m\]'
+NORM='\[\e[0m\]'
+
+
+## Mac related
+if [[ $_SYSTEM == 'Darwin' ]]; then
+    export BASH_SILENCE_DEPRECATION_WARNING=1
+    export CLICOLOR=1
+    export LSCOLORS=ExFxBxDxCxegedabagacad
+    alias ls='ls -GFh'
+
+    _CPU="$(sysctl -n machdep.cpu.brand_string)"
+    _CPU=${_CPU:0:5}
+
+    if [[ "$_CPU" == "Apple" ]]; then
+        _BASH_COMPLETION_DIR='/opt/homebrew/etc/bash_completion.d'
+        case "$(arch)" in
+            i386|x86_64*)
+                _ARCH_PS1="Rosetta2"
+                ;;
+            arm64*)
+                _ARCH_PS1="Native"
+                ;;
+        esac 
+    else
+        _BASH_COMPLETION_DIR='/usr/local/etc/bash_completion.d'
+    fi
+fi
+
+
+
+## Linux related
+if [[ "$_SYSTEM" == 'Linux' ]]; then
+    alias pbcopy='xclip -selection clipboard'
+    alias pbpaste='xclip -selection clipboard -o'
+    _BASH_COMPLETION_DIR='/etc/bash_completion.d'
+fi
+
+
+
+## Bazel Project related
+if [ $(which bazel) ]; then
+    function REPO_ROOT {
+        while [ "$PWD" != '/' ]; do
+        if [ -f "$PWD/WORKSPACE" ]; then
+            echo "$PWD"
+            return
+        fi
+        cd ..
+      done
+      echo "//[DOES_NOT_EXIST]"
+    }
+
+    alias repo_root='cd "$(REPO_ROOT)"'
+    alias cdroot='repo_root'
+    alias cdg3='repo_root'
+fi
+
+
+
+## Environment dependent setup
+if [ -f "$_BASH_COMPLETION_DIR/git-prompt.sh" ]; then
+    source "$_BASH_COMPLETION_DIR/git-completion.bash"
+    source "$_BASH_COMPLETION_DIR/git-prompt.sh"
+    GIT_PS1='$(__git_ps1 " (%s)")'
+fi
+
+export PS1="\n$PS1_FACE$NORM \u@\h:$YELLOW$GIT_PS1 $WHITE[\w]\n$RED$_ARCH_PS1> $NORM"
+
+
+if [ -f "$HOME/.bashrc" ]; then
+    source "$HOME/.bashrc"
+fi
