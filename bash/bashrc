@@ -105,8 +105,3 @@ if [ -f "$_BASH_COMPLETION_DIR/git-prompt.sh" ]; then
 fi
 
 export PS1="\n$PS1_FACE$NORM \u@\h:$YELLOW$GIT_PS1 $WHITE[\w]\n$RED$_ARCH_PS1> $NORM"
-
-
-if [ -f "$HOME/.bashrc" ]; then
-    source "$HOME/.bashrc"
-fi
