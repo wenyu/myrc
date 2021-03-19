@@ -56,10 +56,12 @@ if [[ $_SYSTEM == 'Darwin' ]]; then
             i386|x86_64*)
                 _BREW="/opt/homebrew_rosetta/bin/brew"
                 _ARCH_PS1="Rosetta2"
+                alias XarchTools='export PATH="$PATH:/opt/homebrew/bin"'
                 ;;
             arm64*)
                 _BREW="/opt/homebrew/bin/brew"
                 _ARCH_PS1="NativeAS"
+                alias XarchTools='export PATH="$PATH:/opt/homebrew_rosetta/bin"'
                 ;;
         esac 
         [ -f "$_BREW" ] && eval $("$_BREW" shellenv)
