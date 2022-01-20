@@ -1,0 +1,88 @@
+
+# Bash completion
+if false; then
+    if [ -d "$_BASH_COMPLETION_DIR" ]; then
+	autoload bashcompinit
+	bashcompinit
+	ls "$_BASH_COMPLETION_DIR" | grep -v '.disabled$' | while read F; do
+	    source "${_BASH_COMPLETION_DIR}/${F}"
+	done
+    fi
+fi
+
+# Prompt
+function _PS_FACE {
+    CODE=$?
+    echo -en '%B%F{yellow}'
+    if [ $CODE -eq 0 ]; then
+	echo -en '%K{blue}:-)'
+    elif [ $CODE -eq 146 ]; then
+	echo -en '%K{blue}.zZ'
+    else
+	echo -en '%K{red}:-('
+    fi
+    echo -en '%k%b%f'
+}
+
+autoload -Uz vcs_info
+zstyle ':vcs_info:git*' check-for-changes true
+zstyle ':vcs_info:git*' formats '(%b|%u%c)'
+function _PS_VCS {
+    vcs_info
+    if [ -z ${vcs_info_msg_0_} ]; then return; fi
+    echo -en "%B%F{yellow}${vcs_info_msg_0_/%|)/)}%f%b "
+}
+
+setopt prompt_subst
+
+PS1='
+$(_PS_FACE) %n@%m: $(_PS_VCS)%B[%U%~%u]%b
+%B%(!.%S%F{cyan}#%s.%F{red}>) %b%f'
+
+RPS1='%F{black}%K{cyan}[%D{%a %m/%d %r}]%k%f'
+
+# Aliases
+alias em='emacs -nw'
+alias path='export PATH="${PWD}:${PATH}"'
+alias here='find . | grep'
+export EDITOR='emacs -nw'
+
+function cleanall {
+    find . -type f -regex '.*[#~]$' -or -regex '.*/\.[^/]*\.swp$' | while read FN; do
+        rm -f "$FN" && echo "Deleted: $FN"
+    done
+}
+
+function tbgs {
+    if [ $# -eq 0 ]; then
+        echo "Usage: tbgs <str to find>"
+        return 1
+    fi
+    grep --color=auto --exclude='*[~#]' -nire "$@" . 2> /dev/null
+    return $?
+}
+
+function force_kill {
+    if [ $# -ne 1 ]; then
+        echo "You need to provide a target."
+        return 1
+    fi
+    ps ax | grep -i "$1" | grep -v grep | while read A B; do echo $A; done | sudo xargs kill -9
+}
+
+if [ $(which bazel) ]; then
+    function REPO_ROOT {
+        while [ "$PWD" != '/' ]; do
+        if [ -f "$PWD/WORKSPACE" ]; then
+            echo "$PWD"
+            return
+        fi
+        cd ..
+      done
+      echo "//[DOES_NOT_EXIST]"
+    }
+
+    alias repo_root='cd "$(REPO_ROOT)"'
+    alias cdroot='repo_root'
+    alias cdg3='repo_root'
+fi

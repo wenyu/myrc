@@ -1,0 +1,21 @@
+stty -ixon
+_SYSTEM="$(uname -s)"
+
+if [[ $_SYSTEM == 'Darwin' ]]; then
+
+    _CPU="$(/usr/sbin/sysctl -n machdep.cpu.brand_string)"
+    _CPU="${_CPU:0:5}"
+    _ARCH="$(arch)"
+
+    if [[ "$_CPU" == "Apple" ]]; then
+	_HOMEBREW_ROOT="/opt/homebrew"
+    else
+	_HOMEBREW_ROOT="/usr/local"
+    fi
+
+    _BASH_COMPLETION_DIR="${_HOMEBREW_ROOT}/etc/bash_completion.d"
+    export PATH="${HOME}/bin:${HOME}/.local/bin:${_HOMEBREW_ROOT}/bin:$PATH"
+    
+elif [[ $_SYSTEM == 'Linux' ]]; then
+    _BASH_COMPLETION_DIR="/etc/bash_completion.d"
+fi
