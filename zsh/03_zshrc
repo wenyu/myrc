@@ -33,11 +33,18 @@ function _PS_VCS {
     echo -en "%B%F{yellow}${vcs_info_msg_0_/%|)/)}%f%b "
 }
 
+function _PS_ROSETTA2 {
+    if [[ "$_SYSTEM" != 'Darwin' ]]; then return; fi
+    if [[ "$_CPU" == 'Apple' && "$_ARCH" == 'i386' ]]; then
+	echo -en '%F{red}Rosetta2%f'
+    fi
+}
+
 setopt prompt_subst
 
 PS1='
 $(_PS_FACE) %n@%m: $(_PS_VCS)%B[%U%~%u]%b
-%B%(!.%S%F{cyan}#%s.%F{red}>) %b%f'
+'"$(_PS_ROSETTA2)"'%B%(!.%S%F{cyan}#%s.%F{red}>) %b%f'
 
 RPS1='%F{black}%K{cyan}[%D{%a %m/%d %r}]%k%f'
 
