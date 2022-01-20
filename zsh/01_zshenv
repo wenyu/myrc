@@ -15,7 +15,7 @@ if [[ $_SYSTEM == 'Darwin' ]]; then
 
     _BASH_COMPLETION_DIR="${_HOMEBREW_ROOT}/etc/bash_completion.d"
     export PATH="${HOME}/bin:${HOME}/.local/bin:${_HOMEBREW_ROOT}/bin:$PATH"
-    
+
 elif [[ $_SYSTEM == 'Linux' ]]; then
     _BASH_COMPLETION_DIR="/etc/bash_completion.d"
 fi
