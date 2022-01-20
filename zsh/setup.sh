@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/zsh
 set -ex
-SCRIPT_PATH="$(dirname $(realpath $0))"
+SCRIPT_PATH="${0:a:h}"
 echo "source ${SCRIPT_PATH}/01_zshenv" >>$HOME/.zshenv
 echo "source ${SCRIPT_PATH}/02_zprofile" >>$HOME/.zprofile
 echo "source ${SCRIPT_PATH}/03_zshrc" >>$HOME/.zshrc
