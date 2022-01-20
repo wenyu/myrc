@@ -70,7 +70,7 @@ function force_kill {
     ps ax | grep -i "$1" | grep -v grep | while read A B; do echo $A; done | sudo xargs kill -9
 }
 
-if [ $(which bazel) ]; then
+if [ -f "$(which bazel)" ]; then
     function REPO_ROOT {
         while [ "$PWD" != '/' ]; do
         if [ -f "$PWD/WORKSPACE" ]; then
