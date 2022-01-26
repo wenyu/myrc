@@ -18,6 +18,8 @@ function _PS_FACE {
 	echo -en '%K{blue}:-)'
     elif [ $CODE -eq 146 ]; then
 	echo -en '%K{blue}.zZ'
+    elif [ $CODE -eq 137 ]; then
+        echo -en '%K{red}X_X'
     else
 	echo -en '%K{red}:-('
     fi
