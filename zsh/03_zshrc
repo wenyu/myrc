@@ -9,6 +9,8 @@ if false; then
 	done
     fi
 fi
+autoload -U select-word-style
+select-word-style bash
 
 # Prompt
 function _PS_FACE {
