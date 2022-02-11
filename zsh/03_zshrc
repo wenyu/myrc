@@ -1,9 +1,9 @@
 
 # Auto-completion
-zstyle ':autocomplete:*' min-delay 2
-zstyle ':autocomplete:*' min-input 1
-zstyle ':autocomplete:*' list-lines 8
+zstyle ':autocomplete:*' min-delay 864000
+zstyle ':autocomplete:*' min-input 1024
 zstyle ':autocomplete:*' insert-unambiguous yes
+zstyle ':autocomplete:*' list-lines 10
 zstyle ':autocomplete:history-search:*' list-lines 10
 zstyle ':autocomplete:history-incremental-search-*:*' list-lines 10
 source "${__WENYU_RC_ROOT}/autocomplete/zsh-autocomplete.plugin.zsh"
