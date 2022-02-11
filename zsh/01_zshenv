@@ -20,4 +20,5 @@ if [[ $_SYSTEM == 'Darwin' ]]; then
 
 elif [[ $_SYSTEM == 'Linux' ]]; then
     _BASH_COMPLETION_DIR="/etc/bash_completion.d"
+    skip_global_compinit=1
 fi
