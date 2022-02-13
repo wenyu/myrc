@@ -1,5 +1,9 @@
+# Bash word-skip
+autoload -U select-word-style
+select-word-style bash
 
 # Auto-completion
+if false; then  # Problematic, temporary disable.
 zstyle ':autocomplete:*' min-delay 864000
 zstyle ':autocomplete:*' min-input 1024
 zstyle ':autocomplete:*' insert-unambiguous yes
@@ -7,14 +11,11 @@ zstyle ':autocomplete:*' list-lines 10
 zstyle ':autocomplete:history-search:*' list-lines 10
 zstyle ':autocomplete:history-incremental-search-*:*' list-lines 10
 source "${__WENYU_RC_ROOT}/autocomplete/zsh-autocomplete.plugin.zsh"
+fi
 
 # Highlight
 ZSH_HIGHLIGHT_MAXLENGTH=2048
 source "${__WENYU_RC_ROOT}/highlighting/zsh-syntax-highlighting.zsh"
-
-# Bash word-skip
-autoload -U select-word-style
-select-word-style bash
 
 # The fuck
 if [ -e "$(which thefuck)" ]; then
