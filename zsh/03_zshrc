@@ -3,14 +3,12 @@ autoload -U select-word-style
 select-word-style bash
 
 # Auto-completion
-if false; then  # Problematic, temporary disable.
-zstyle ':autocomplete:*' min-delay 864000
-zstyle ':autocomplete:*' min-input 1024
-zstyle ':autocomplete:*' insert-unambiguous yes
-zstyle ':autocomplete:*' list-lines 10
-zstyle ':autocomplete:history-search:*' list-lines 10
-zstyle ':autocomplete:history-incremental-search-*:*' list-lines 10
-source "${__WENYU_RC_ROOT}/autocomplete/zsh-autocomplete.plugin.zsh"
+if [[ "$_SYSTEM" == 'Darwin' && ( $_CPU == 'Intel' || $_ARCH == 'arm64' ) ]]; then
+    zstyle ':autocomplete:*' min-delay 0.25
+    zstyle ':autocomplete:*' min-input 512
+    zstyle ':autocomplete:*' insert-unambiguous yes
+    XDG_DATA_HOME="/tmp"
+    source "${__WENYU_RC_ROOT}/autocomplete/zsh-autocomplete.plugin.zsh"
 fi
 
 # Highlight
