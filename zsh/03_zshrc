@@ -18,6 +18,7 @@ source "${__WENYU_RC_ROOT}/highlighting/zsh-syntax-highlighting.zsh"
 # The fuck
 if [ -e "$(which thefuck)" ]; then
     eval $(thefuck -a)
+    eval $(thefuck -a fk)
 fi
 
 # Prompt
