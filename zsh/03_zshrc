@@ -78,7 +78,7 @@ alias here='find . | grep'
 export EDITOR='emacs -nw'
 
 function cleanall {
-    find . -type f -regex '.*[#~]$' -or -regex '.*/\.[^/]*\.swp$' -or -name '~$*' | while read FN; do
+    find . -type f -regex '.*[#~]$' -or -regex '.*/\.[^/]*\.swp$' -or -name '~$*' -or -name '.DS_Store' | while read FN; do
         rm -f "$FN" && echo "Deleted: $FN"
     done
 }
