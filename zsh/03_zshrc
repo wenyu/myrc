@@ -49,7 +49,7 @@ function _PS_VCS {
 
 function _PS_ROSETTA2 {
     if [[ "$_SYSTEM" != 'Darwin' ]]; then return; fi
-    if [[ "$_CPU" == 'Apple' && "$_ARCH" == 'i386' ]]; then
+    if [[ "$_CPU" == 'Apple' && "$_ARCH" == 'x86_64' ]]; then
 	echo -en '%F{red}Rosetta2%f'
     fi
 }
