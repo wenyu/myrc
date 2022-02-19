@@ -5,8 +5,9 @@ select-word-style bash
 # Auto-completion
 if [[ "$_SYSTEM" == 'Darwin' && ( $_CPU == 'Intel' || $_ARCH == 'arm64' ) ]]; then
     zstyle ':autocomplete:*' min-delay 0.25
-    zstyle ':autocomplete:*' min-input 512
+    zstyle ':autocomplete:*' min-input 1
     zstyle ':autocomplete:*' insert-unambiguous yes
+    zstyle ':autocomplete:*' widget-style menu-select
     XDG_DATA_HOME="/tmp"
     source "${__WENYU_RC_ROOT}/autocomplete/zsh-autocomplete.plugin.zsh"
 fi
