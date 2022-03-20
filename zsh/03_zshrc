@@ -1,3 +1,12 @@
+if [[ "x${SHLVL}" == "x1" ]]
+then
+    while true
+    do
+	zsh && break
+    done
+    exit
+fi
+
 # Bash word-skip
 autoload -U select-word-style
 select-word-style bash
