@@ -1,5 +1,6 @@
 if [[ "x${SHLVL}" == "x1" ]]
 then
+    unset -f -m '*'
     while true
     do
 	zsh && break
