@@ -7,13 +7,13 @@ if [[ $_SYSTEM == 'Darwin' ]]; then
     _CPU="$(/usr/sbin/sysctl -n machdep.cpu.brand_string)"
     _CPU="${_CPU:0:5}"
 
-    if [[ "$_CPU" == "Apple" ]]; then
+    if [[ "$_CPU" == "Apple" && "$_ARCH" == "arm64" ]]; then
         _HOMEBREW_ROOT="/opt/homebrew"
     else
         _HOMEBREW_ROOT="/usr/local"
     fi
 
-    export PATH="${HOME}/bin:${HOME}/.local/bin:${_HOMEBREW_ROOT}/bin:$PATH"
+    export PATH="${HOME}/bin:${HOME}/.local/bin::$PATH"
 
     [ -f "${_HOMEBREW_ROOT}/bin/brew" ] && eval $("${_HOMEBREW_ROOT}/bin/brew" shellenv)
 
