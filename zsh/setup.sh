@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 set -ex
 SCRIPT_PATH="${0:a:h}"
 CONFIG_FILES=( .zshenv .zprofile .zshrc .zlogin .zlogout )
