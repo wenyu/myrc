@@ -1,6 +1,7 @@
 stty -ixon
 _SYSTEM="$(uname -s)"
 _ARCH="$(uname -m)"
+export PATH="${HOME}/bin:${HOME}/.local/bin:$PATH"
 
 if [[ $_SYSTEM == 'Darwin' ]]; then
 
@@ -12,8 +13,6 @@ if [[ $_SYSTEM == 'Darwin' ]]; then
     else
         _HOMEBREW_ROOT="/usr/local"
     fi
-
-    export PATH="${HOME}/bin:${HOME}/.local/bin::$PATH"
 
     [ -f "${_HOMEBREW_ROOT}/bin/brew" ] && eval $("${_HOMEBREW_ROOT}/bin/brew" shellenv)
 
