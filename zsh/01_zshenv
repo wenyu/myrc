@@ -19,3 +19,11 @@ if [[ $_SYSTEM == 'Darwin' ]]; then
 elif [[ $_SYSTEM == 'Linux' ]]; then
     skip_global_compinit=1
 fi
+
+if [ "$NIX_PROFILES" ]; then
+  for profile in ${(z)NIX_PROFILES}; do
+    for script in $(find -L "$profile/etc/profile.d" -name '*.sh' 2>/dev/null); do
+      source "$script"
+    done
+  done
+fi
