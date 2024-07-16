@@ -1,0 +1,1 @@
+alias cdatv='conda deactivate; conda activate base; conda deactivate; conda activate'
