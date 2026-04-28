@@ -31,3 +31,11 @@ echo 'source ${__WENYU_RC_ROOT}/02_zprofile' >>$HOME/.zprofile
 echo 'source ${__WENYU_RC_ROOT}/03_zshrc' >>$HOME/.zshrc
 echo 'source ${__WENYU_RC_ROOT}/04_zlogin' >>$HOME/.zlogin
 echo 'source ${__WENYU_RC_ROOT}/99_zlogout' >>$HOME/.zlogout
+
+# Apply submodule patches
+for patch in "$SCRIPT_PATH"/*.patch; do
+    [ -f "$patch" ] || continue
+    submodule="${${patch:t}%%-*}"
+    echo "Applying ${patch:t} to ${submodule}/"
+    git -C "$SCRIPT_PATH/$submodule" apply "$patch"
+done
