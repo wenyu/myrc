@@ -2,25 +2,38 @@
 stty -ixon
 _SYSTEM="$(uname -s)"
 
+# Aliases
 alias em='emacs -nw'
-alias path='export PATH="`pwd`:$PATH"'
+alias path='export PATH="${PWD}:${PATH}"'
 alias here='find . | grep'
+# pbcopy/pbpaste: only alias to xclip on Linux (macOS has native /usr/bin/pbcopy and /usr/bin/pbpaste)
 
-export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
 export EDITOR="emacs -nw"
+export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
 
+# PS_Face — extended with zsh-equivalent exit codes
+PS_FACE='\[\e[1;33m\]$(CODE=$?; if [ $CODE -eq 0 ]; then echo -e "\[\e[1;44m\]:-)"; elif [ $CODE -eq 146 ]; then echo -e "\[\e[1;44m\].zZ"; elif [ $CODE -eq 137 ]; then echo -e "\[\e[1;44m\]X_X"; else echo -e "\[\e[1;41m\]:-("; fi)'
+RED='\[\e[1;31m\]'
+WHITE='\[\e[1;37m\]'
+YELLOW='\[\e[1;33m\]'
+NORM='\[\e[0m\]'
+
+# RPS1: date/time right prompt
+RPS1='\[\e[1;30m\]\[\e[1;46m\][$(date +%a\ %m/%d\ %r)]\[\e[0m\]'
+
+# Functions
 function cleanall {
-    find . -type f -regex '.*[#~]$' -or -regex '.*/\.[^/]*\.swp$' | while read FN; do
+    find . -type f -regex '.*[#~]$' -or -regex '.*/\.[^/]*\.swp$' -or -name '~$*' -or -name '.DS_Store' -or -name '._fseventsd' -or -name '._*' | while read FN; do
         rm -f "$FN" && echo "Deleted: $FN"
     done
 }
 
 function tbgs {
     if [ $# -eq 0 ]; then
-        echo "Usage: tbgs <str to find>";
-        return 1;
-    fi;
-    grep --color=auto --exclude='*[~#]' -nire "$@" . 2> /dev/null;
+        echo "Usage: tbgs <str to find>"
+        return 1
+    fi
+    grep --color=auto --exclude='*[~#]' -nire "$@" . 2> /dev/null
     return $?
 }
 
@@ -32,66 +45,44 @@ function force_kill {
     ps ax | grep -i "$1" | grep -v grep | while read A B; do echo $A; done | sudo xargs kill -9
 }
 
-# PS_Face
-PS1_FACE='\[\e[1;33m\]$(CODE=$?; if [ $CODE -eq 0 ]; then echo -e "\[\e[1;44m\]:-)"; elif [ $CODE -eq 148 ]; then echo -e "\[\e[1;44m\].zZ"; else echo -e "\[\e[1;41m\]:-("; fi)'
-RED='\[\e[1;31m\]'
-WHITE='\[\e[1;37m\]'
-YELLOW='\[\e[1;33m\]'
-NORM='\[\e[0m\]'
-
-
-## Mac related
+## Platform Detection
+# Homebrew
+_HOMEBREW_ROOT="/usr/local"
 if [[ $_SYSTEM == 'Darwin' ]]; then
     export BASH_SILENCE_DEPRECATION_WARNING=1
     export CLICOLOR=1
     export LSCOLORS=ExFxBxDxCxegedabagacad
-    alias ls='ls -GFh'
 
     _CPU="$(sysctl -n machdep.cpu.brand_string)"
-    _CPU=${_CPU:0:5}
+    _CPU="${_CPU:0:5}"
 
     if [[ "$_CPU" == "Apple" ]]; then
-        _BASH_COMPLETION_DIR='/opt/homebrew/etc/bash_completion.d'
-        case "$(arch)" in
-            i386|x86_64*)
-                _BREW="/opt/homebrew_rosetta/bin/brew"
-                _ARCH_PS1="Rosetta2"
-                alias XarchTools='export PATH="$PATH:/opt/homebrew/bin"'
-                ;;
-            arm64*)
-                _BREW="/opt/homebrew/bin/brew"
-                _ARCH_PS1="NativeAS"
-                alias XarchTools='export PATH="$PATH:/opt/homebrew_rosetta/bin"'
-                ;;
-        esac 
-        [ -f "$_BREW" ] && eval $("$_BREW" shellenv)
-    else
-        _BASH_COMPLETION_DIR='/usr/local/etc/bash_completion.d'
+        _HOMEBREW_ROOT="/opt/homebrew"
     fi
-fi
+    [ -f "$_HOMEBREW_ROOT/bin/brew" ] && eval "$($_HOMEBREW_ROOT/bin/brew shellenv)"
 
-
-
-## Linux related
-if [[ "$_SYSTEM" == 'Linux' ]]; then
+    alias ls='ls -GFh'
+elif [[ $_SYSTEM == 'Linux' ]]; then
+    _HOMEBREW_ROOT="/usr/local"
+    alias ls='ls --color=auto -Fh'
     alias pbcopy='xclip -selection clipboard'
     alias pbpaste='xclip -selection clipboard -o'
-    _BASH_COMPLETION_DIR='/etc/bash_completion.d'
 fi
 
+## LS_COLORS (from xterm's XTerm/Rxvt color scheme)
+export LS_COLORS='di=38;5;33:ln=38;5;69:pi=38;5;126:so=38;5;197:do=38;5;127:bd=38;5;68:cd=38;5;113;1:or=48;5;196;38;5;232;1:mi=0:su=38;5;220;1;3;100;1:sg=48;5;3;38;5;0:ca=38;5;17:tw=48;5;235;38;5;139;3:ow=38;5;220;1:*~=38;5;241:*.orig=38;5;241:*.BUP=38;5;241:*.bak=38;5;241:*.o=38;5;241:*.so=38;5;241:*.dll=38;5;241:*.pyc=38;5;241:*.pyo=38;5;241:*.elc=38;5;241:*.class=38;5;241:*lock=38;5;248:*lockfile=38;5;248:*.pid=38;5;248:*.state=38;5;248:*core=38;5;241:*.stackdump=38;5;241:*.tmp=38;5;244:*.swp=38;5;244:*.swo=38;5;244:*README=38;5;220;1:*README.rst=38;5;220;1:*README.md=38;5;220;1:*LICENSE=38;5;220;1:*COPYING=38;5;220;1:*INSTALL=38;5;220;1:*AUTHORS=38;5;220;1:*HISTORY=38;5;220;1:*CONTRIBUTORS=38;5;220;1:*PATENTS=38;5;220;1:*VERSION=38;5;220;1:*NOTICE=38;5;220;1:*CHANGES=38;5;220;1:*.log=38;5;190:*.adoc=38;5;184:*.asciidoc=38;5;184:*.etx=38;5;184:*.info=38;5;184:*.markdown=38;5;184:*.mkd=38;5;184:*.nfo=38;5;184:*.org=38;5;184:*.pod=38;5;184:*.textile=38;5;184:*.jsonl=38;5;178:*.jsonnet=38;5;142:*.libsonnet=38;5;142:*.ndjson=38;5;178:*.msg=38;5;178:*.pgn=38;5;178:*.rss=38;5;178:*.yml=38;5;178:*.RData=38;5;178:*.rdata=38;5;178:*.xsd=38;5;178:*.dtd=38;5;178:*.sgml=38;5;178:*.rng=38;5;178:*.rnc=38;5;178:*.cbr=38;5;141:*.cbz=38;5;141:*.chm=38;5;141:*.djvu=38;5;141:*.pdf=38;5;141:*.PDF=38;5;141:*.mobi=38;5;141:*.epub=38;5;141:*.docm=38;5;111;4:*.doc=38;5;111:*.docx=38;5;111:*.odb=38;5;111:*.odt=38;5;111:*.rtf=38;5;111:*.odp=38;5;166:*.pps=38;5;166:*.ppt=38;5;166:*.pptx=38;5;166:*.ppts=38;5;166:*.xlsx=38;5;112:*.xla=38;5;76:*.xls=38;5;112:*.ods=38;5;112:*.csv=38;5;78:*.tsv=38;5;78:*.csv=38;5;78:*.tsv=38;5;78:*.pages=38;5;111:*.numbers=38;5;112:*.key=38;5;166:*.config=1:*.cfg=1:*.conf=1:*.rc=1:*.authorized_keys=1:*.known_hosts=1:*.ini=1:*.plist=1:*.profile=1:*.bash_profile=1:*.bash_login=1:*.bash_logout=1:*.zshenv=1:*.zprofile=1:*.zlogin=1:*.zlogout=1:*.viminfo=1:*.git=38;5;197:*.gitignore=38;5;240:*.gitattributes=38;5;240:*.gitmodules=38;5;240:*.awk=38;5;172:*.bash=38;5;172:*.bat=38;5;172:*.BAT=38;5;172:*.sed=38;5;172:*.sh=38;5;172:*.zsh=38;5;172:*.vim=38;5;172:*.kak=38;5;172:*.ahk=38;5;41:*.py=38;5;41:*.ipynb=38;5;41:*.rb=38;5;41:*.gemspec=38;5;41:*.pl=38;5;208:*.PL=38;5;160:*.t=38;5;114:*.mysql=38;5;222:*.pgsql=38;5;222:*.sql=38;5;222:*.tcl=38;5;64;1:*.r=38;5;49:*.R=38;5;49:*.gs=38;5;81:*.clj=38;5;41:*.cljs=38;5;41:*.cljc=38;5;41:*.scala=38;5;41:*.sc=38;5;41:*.dart=38;5;51:*.asm=38;5;81:*.cl=38;5;81:*.lisp=38;5;81:*.rkt=38;5;81:*.lua=38;5;81:*.moon=38;5;81:*.c=38;5;81:*.C=38;5;81:*.h=38;5;110:*.H=38;5;110:*.tcc=38;5;110:*.h++=38;5;110:*.hpp=38;5;110:*.hxx=38;5;110:*.ii=38;5;110:*.M=38;5;110:*.m=38;5;110:*.cc=38;5;81:*.cs=38;5;81:*.cp=38;5;81:*.cpp=38;5;81:*.cxx=38;5;81:*.cr=38;5;81:*.go=38;5;81:*.f=38;5;81:*.F=38;5;81:*.for=38;5;81:*.ftn=38;5;81:*.f90=38;5;81:*.f95=38;5;81:*.f03=38;5;81:*.f08=38;5;81:*.nim=38;5;81:*.nimble=38;5;81:*.s=38;5;110:*.S=38;5;110:*.rs=38;5;81:*.scpt=38;5;219:*.swift=38;5;219:*.vala=38;5;81:*.vapi=38;5;81:*.hi=38;5;110:*.hs=38;5;81:*.lhs=38;5;81:*.agda=38;5;81:*.zig=38;5;81:*.v=38;5;81:*.bmp=38;5;97:*.tiff=38;5;97:*.tif=38;5;97:*.TIFF=38;5;97:*.cdr=38;5;97:*.flif=38;5;97:*.gif=38;5;97:*.icns=38;5;97:*.ico=38;5;97:*.jpeg=38;5;97:*.JPG=38;5;97:*.jpg=38;5;97:*.png=38;5;97:*.psd=38;5;97:*.xpm=38;5;97:*.webp=38;5;97:*.ai=38;5;99:*.eps=38;5;99:*.svg=38;5;99:*.avi=38;5;114:*.m4v=38;5;114:*.mkv=38;5;114:*.MOV=38;5;114:*.mov=38;5;114:*.mp4=38;5;114:*.mpg=38;5;114:*.ogm=38;5;114:*.wmv=38;5;114:*.webm=38;5;115:*.ts=38;5;115:*.ogv=38;5;115:*.mp3=38;5;137;1:*.ogg=38;5;137;1:*.opus=38;5;137;1:*.flac=38;5;136;1:*.aiff=38;5;136;1:*.wav=38;5;136;1:*.7z=38;5;40:*.arj=38;5;40:*.bz2=38;5;40:*.cpio=38;5;40:*.gz=38;5;40:*.lrz=38;5;40:*.lz=38;5;40:*.lzma=38;5;40:*.rar=38;5;40:*.tar=38;5;40:*.tbz=38;5;40:*.tgz=38;5;40:*.xz=38;5;40:*.zip=38;5;40:*.deb=38;5;215:*.rpm=38;5;215:*.jar=38;5;215:*.dmg=38;5;215:*.iso=38;5;124:*.img=38;5;124:*.bin=38;5;124:*.accdb=38;5;60:*.db=38;5;60:*.sqlite=38;5;60:*.pacnew=38;5;33:*.err=38;5;160;1:*.error=38;5;160;1:*.aria2=38;5;241:*.pcap=38;5;29:*.cap=38;5;29:*.DS_Store=38;5;239:*.allow=38;5;112:*.deny=38;5;196:*.socket=38;5;45:*.mount=38;5;45:*.service=38;5;45:*.torrent=38;5;116:*.cue=38;5;116:*.properties=38;5;116'
 
-
-## Bazel Project related
+## Bazel Project support
 if [ $(which bazel) ]; then
     function REPO_ROOT {
         while [ "$PWD" != '/' ]; do
-        if [ -f "$PWD/WORKSPACE" ]; then
-            echo "$PWD"
-            return
-        fi
-        cd ..
-      done
-      echo "//[DOES_NOT_EXIST]"
+            if [ -f "$PWD/WORKSPACE" ]; then
+                echo "$PWD"
+                return
+            fi
+            cd ..
+        done
+        echo "//[DOES_NOT_EXIST]"
     }
 
     alias repo_root='cd "$(REPO_ROOT)"'
@@ -99,13 +90,29 @@ if [ $(which bazel) ]; then
     alias cdg3='repo_root'
 fi
 
-
-
 ## Environment dependent setup
+if [ -f "$_HOMEBREW_ROOT/etc/bash_completion.d/git-prompt.sh" ]; then
+    _BASH_COMPLETION_DIR="$_HOMEBREW_ROOT/etc/bash_completion.d"
+elif [ -f "/usr/local/etc/bash_completion.d/git-prompt.sh" ]; then
+    _BASH_COMPLETION_DIR="/usr/local/etc/bash_completion.d"
+elif [ -f "/etc/bash_completion.d/git-prompt.sh" ]; then
+    _BASH_COMPLETION_DIR="/etc/bash_completion.d"
+fi
+
 if [ -f "$_BASH_COMPLETION_DIR/git-prompt.sh" ]; then
     source "$_BASH_COMPLETION_DIR/git-completion.bash"
     source "$_BASH_COMPLETION_DIR/git-prompt.sh"
     GIT_PS1='$(__git_ps1 " (%s)")'
 fi
 
-export PS1="\n$PS1_FACE$NORM \u@\h:$YELLOW$GIT_PS1 $WHITE[\w]\n$RED$_ARCH_PS1> $NORM"
+## Prompt Setup
+# Rosetta2 indicator: show on Apple Silicon Mac when running under Rosetta (x86_64 process on arm64 hardware)
+if [[ $_SYSTEM == 'Darwin' && "$_CPU" == "Apple" && "$_ARCH" == "x86_64" ]]; then
+    _ROSETTA='$(echo -e "\[\e[1;31m\]Rosetta2${NORM} ")'
+else
+    _ROSETTA='$(echo "")'
+fi
+
+# Full PS1: smiley on first line, user@host: git-branch [path] on second, Rosetta on third
+# Uses $(id -u) to show '#' for root (uid 0) and '>' for regular users (bash-native, replaces zsh's %(!.#.>))
+PS1="\n$PS_FACE$NORM \u@\h:${YELLOW}${GIT_PS1}${NORM}[\w]\n${_ROSETTA}${RED}$(if [ "$(id -u)" -eq 0 ]; then echo -e '#'; else echo -e '>'; fi)${NORM} "
